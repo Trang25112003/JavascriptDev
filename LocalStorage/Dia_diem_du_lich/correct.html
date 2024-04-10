@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Correct Destination</title>
+  <!-- Link tới Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1 class="mt-5 mb-4">Correct Destination</h1>
+
+    <!-- Form sửa thông tin điểm du lịch -->
+    <form id="correctForm" class="mb-4">
+      <div class="form-group">
+        <label for="correctId">Select ID of Destination to Correct:</label>
+        <select id="correctId" name="correctId" class="form-control" required>
+          <!-- Options will be dynamically added here -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="correctName">New Name:</label>
+        <input type="text" id="correctName" name="correctName" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="correctDescription">New Description:</label>
+        <input type="text" id="correctDescription" name="correctDescription" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="correctDescription">New Rate:</label>
+        <input type="text" id="correctRating" name="correctRating" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="correctDescription">New Cost:</label>
+        <input type="text" id="correctCost" name="correctCost" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="correctDescription">New Image:</label>
+        <input type="text" id="correctImage" name="correctImage" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Correct</button>
+    </form>
+
+    <!-- Kết quả thông báo sửa -->
+    <div id="correctMessage"></div>
+  </div>
+
+  <!-- Link tới Bootstrap JS và jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <!-- Script để xử lý sửa thông tin điểm du lịch -->
+  <script>
+    let destinations = JSON.parse(localStorage.getItem('destinations')) || [];
+    const correctForm = document.getElementById('correctForm');
+    const correctMessage = document.getElementById('correctMessage');
+    const correctIdSelect = document.getElementById('correctId');
+    const correctName = document.getElementById('correctName');
+    const correctDescription = document.getElementById('correctDescription');
+    const correctRating = document.getElementById('correctRating');
+    const correctCost = document.getElementById('correctCost');
+    const correctImage = document.getElementById('correctImage');
+
+    // Populate select options with existing destination IDs
+    destinations.forEach(dest => {
+      const option = document.createElement('option');
+      option.value = dest.id;
+      option.textContent = dest.id;
+      correctIdSelect.appendChild(option);
+    });
+
+    // Function to update form fields with destination details
+    function updateFormFields(destination) {
+      correctName.value = destination.name;
+      correctDescription.value = destination.description;
+      correctRating.value = destination.rating;
+      correctCost.value = destination.cost;
+      correctImage.value = destination.image;
+    }
+
+    // Event listener for selecting a destination ID
+    correctIdSelect.addEventListener('change', function() {
+      const selectedId = parseInt(correctIdSelect.value);
+      const selectedDestination = destinations.find(dest => dest.id === selectedId);
+      if (selectedDestination) {
+        updateFormFields(selectedDestination);
+      }
+    });
+
+    correctForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const correctId = parseInt(correctIdSelect.value);
+      const updatedDestinationIndex = destinations.findIndex(dest => dest.id === correctId);
+      if (updatedDestinationIndex !== -1) {
+        destinations[updatedDestinationIndex] = {
+          id: correctId,
+          name: correctName.value.trim(),
+          description: correctDescription.value.trim(),
+          rating: correctRating.value.trim(),
+          cost: correctCost.value.trim(),
+          image: correctImage.value.trim()
+        };
+        localStorage.setItem('destinations', JSON.stringify(destinations));
+        correctMessage.innerHTML = `<div class="alert alert-success mt-3" role="alert">Destination corrected successfully!</div>`;
+      } else {
+        correctMessage.innerHTML = `<div class="alert alert-danger mt-3" role="alert">Destination not found!</div>`;
+      }
+    });
+  </script>
+</body>
+</html>
